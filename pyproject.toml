@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "tycho-station"
+version = "0.1.0"
+description = "A simple registry for storing versioned packages and archives"
+authors = ["Paul Bailey <paul@neutron.studio>"]
+license = "MIT"
+packages = [
+    { include = "tychoreg" }
+]
+
+[tool.poetry.dependencies]
+python = ">=3.6,<4.0"
+typer = "^0.3.2"
+urllib3 = {git = "https://github.com/pizzapanther/urllib3.git", rev = "1.26.x"}
+boto3 = {version = "^1.16.62", optional = true}
+dataclasses = {version = "^0.8", python = "3.6"}
+
+[tool.poetry.dev-dependencies]
+yapf = "^0.30.0"
+poethepoet = "^0.9.0"
+
+[tool.poetry.extras]
+s3 = ["boto3"]
+
+[tool.poe.tasks]
+check_format = "yapf -rpd tychoreg/"
+format = "yapf -rpi -vv *.py tychoreg/"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+
