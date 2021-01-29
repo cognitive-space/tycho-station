@@ -44,6 +44,9 @@ class BackendBase:
     def promote(self, pkgname, version):
         raise NotImplementedError
 
+    def init(self, pkgname):
+        raise NotImplementedError
+
     def pull(self, pkgname, version, force=False):
         raise NotImplementedError
 

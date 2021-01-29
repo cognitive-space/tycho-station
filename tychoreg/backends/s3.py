@@ -115,3 +115,15 @@ class Backend(BackendBase):
             self.error('Does Not Exist: {}, Version {}'.format(
                 pkgname, version))
             sys.exit(1)
+
+    def init(self, pkgname, filename):
+        pkg = Package(pkgname)
+
+        if self.exists(str(pkg.metapath)):
+            self.error('Already Initialized: {}'.format(pkgname))
+
+        else:
+            data = {"localname": filename, "latest": None}
+            fh = io.BytesIO(json.dumps(data, indent=2).encode())
+            self.client.upload_fileobj(fh, self.bucket, str(pkg.metapath))
+            self.message('Initialized: {}'.format(pkgname))

@@ -94,6 +94,12 @@ def promote(pkgname: str, version: str, config: Path = DEFAULT_CONFIG):
 
 
 @app.command()
+def init(pkgname: str, filename: str, config: Path = DEFAULT_CONFIG):
+    backend = get_backend(config)
+    backend.init(pkgname, filename)
+
+
+@app.command()
 def pull(pkgname: str,
          version: str = 'latest',
          force: bool = False,
