@@ -47,7 +47,7 @@ class BackendBase:
     def init(self, pkgname):
         raise NotImplementedError
 
-    def pull(self, pkgname, version, force=False):
+    def pull(self, pkgname, version, outfile=None, force=False):
         raise NotImplementedError
 
     def json_data(self, path):

@@ -12,6 +12,14 @@ app = typer.Typer()
 
 GREEN = typer.colors.GREEN
 DEFAULTS = {"backend": "s3", "outdir": "tycho_packages"}
+OUTFILE = typer.Option(None,
+                       help="Force output file path",
+                       exists=False,
+                       file_okay=True,
+                       dir_okay=False,
+                       writable=True,
+                       readable=True,
+                       resolve_path=True)
 DEFAULT_CONFIG = typer.Option(".tychoreg.json",
                               help="Config file path",
                               exists=False,
@@ -104,9 +112,10 @@ def init(pkgname: str, filename: str, config: Path = DEFAULT_CONFIG):
 def pull(pkgname: str,
          version: str = 'latest',
          force: bool = False,
+         outfile: Path = OUTFILE,
          config: Path = DEFAULT_CONFIG):
     backend = get_backend(config)
-    return backend.pull(pkgname, version, force)
+    return backend.pull(pkgname, version, outfile, force)
 
 
 @app.command()

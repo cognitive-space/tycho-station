@@ -58,7 +58,7 @@ class Backend(BackendBase):
         ret.sort()
         return ret
 
-    def pull(self, pkgname, version, force=False):
+    def pull(self, pkgname, version, outfile=None, force=False):
         self.ensure_outdir()
 
         pkg = Package(pkgname)
@@ -72,6 +72,8 @@ class Backend(BackendBase):
 
         file_key = self.remote_pkg_path(pkgname, version)
         localpath = self.outdir / pkg.meta['localname']
+        if outfile:
+            localpath = outfile
 
         info = None
         if not force:
@@ -84,7 +86,8 @@ class Backend(BackendBase):
                 info = self.client.head_object(Bucket=self.bucket,
                                                Key=file_key)
 
-            self.message('Pulling: {} {} -> {}'.format(pkgname, version, localpath))
+            self.message('Pulling: {} {} -> {}'.format(pkgname, version,
+                                                       localpath))
             self.client.download_file(self.bucket, file_key, str(localpath))
             self.write_etag(info['ETag'], localpath)
 
