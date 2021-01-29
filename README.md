@@ -29,6 +29,9 @@ tychoreg pull pkgname --version 1.0
 
 # Pull multiple packages at latest
 tychoreg pull-list pkgname1 pkgname2 pkgname3
+
+# More help
+tychoreg {command} --help
 ```
 ## Configuration
 
