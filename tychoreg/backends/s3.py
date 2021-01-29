@@ -1,6 +1,5 @@
 import io
 import json
-import sys
 
 import boto3
 import botocore
@@ -69,7 +68,7 @@ class Backend(BackendBase):
 
         if not version:
             self.message('Nothing to Pull: {}'.format(pkgname))
-            sys.exit(1)
+            return
 
         file_key = self.remote_pkg_path(pkgname, version)
         localpath = self.outdir / pkg.meta['localname']
@@ -98,7 +97,7 @@ class Backend(BackendBase):
         if self.exists(file_key):
             self.error('Already Exists: {}, Version {}'.format(
                 pkgname, version))
-            sys.exit(1)
+            return 1
 
         else:
             self.client.upload_file(str(file), self.bucket, file_key)
@@ -118,7 +117,7 @@ class Backend(BackendBase):
         else:
             self.error('Does Not Exist: {}, Version {}'.format(
                 pkgname, version))
-            sys.exit(1)
+            return 1
 
     def init(self, pkgname, filename):
         pkg = Package(pkgname)

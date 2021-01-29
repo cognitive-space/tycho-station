@@ -3,6 +3,7 @@ import json
 import os
 
 from pathlib import Path
+from typing import List
 
 import typer
 from dotenv import load_dotenv
@@ -84,19 +85,19 @@ def push(pkgname: str,
          promote_latest: bool = False,
          config: Path = DEFAULT_CONFIG):
     backend = get_backend(config)
-    backend.push(pkgname, version, file, promote_latest)
+    return backend.push(pkgname, version, file, promote_latest)
 
 
 @app.command()
 def promote(pkgname: str, version: str, config: Path = DEFAULT_CONFIG):
     backend = get_backend(config)
-    backend.promote(pkgname, version)
+    return backend.promote(pkgname, version)
 
 
 @app.command()
 def init(pkgname: str, filename: str, config: Path = DEFAULT_CONFIG):
     backend = get_backend(config)
-    backend.init(pkgname, filename)
+    return backend.init(pkgname, filename)
 
 
 @app.command()
@@ -105,7 +106,16 @@ def pull(pkgname: str,
          force: bool = False,
          config: Path = DEFAULT_CONFIG):
     backend = get_backend(config)
-    backend.pull(pkgname, version, force)
+    return backend.pull(pkgname, version, force)
+
+
+@app.command()
+def pull_list(pkgname: List[str],
+              force: bool = False,
+              config: Path = DEFAULT_CONFIG):
+    backend = get_backend(config)
+    for p in pkgname:
+        backend.pull(p, 'latest', force=force)
 
 
 if __name__ == "__main__":
