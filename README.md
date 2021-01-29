@@ -6,7 +6,7 @@ A simple registry for storing versioned packages and archives.
 
 Python 3.6+ required
 
-`pip install tycho-station`
+`pip install tycho-station[s3]`
 
 ## Usage
 
@@ -30,4 +30,70 @@ tychoreg pull pkgname --version 1.0
 # Pull multiple packages at latest
 tychoreg pull-list pkgname1 pkgname2 pkgname3
 ```
+## Configuration
 
+The default configuration file is `.tychoreg.json`. You can use the `--config` option to change this path.
+
+**Example Configuration**
+
+```json
+{
+  "tycho": {
+    "backend": "s3",
+    "outdir": "tycho_packages"
+  },
+  "s3": {
+    "bucket": "my-registry",
+    "region_name": "us-east-1",
+    "aws_access_key_id": "KEYHERE",
+    "aws_secret_access_key": "SECRETHERE"
+  }
+}
+```
+
+**Example Configuration Using Environment Variables**
+
+For this example, a Read only key is set for pulling packages by everyone and users with escalated privileges can use a Write key.
+
+```json
+{
+  "s3": {
+    "bucket": "my-registry",
+    "region_name": "us-east-1",
+    "aws_access_key_id": {
+        "env": "REG_WRITE_KEY",
+        "default": "KEYHERE"
+    },
+    "aws_secret_access_key": {
+        "env": "REG_WRITE_SECRET",
+        "default": "SECRETHERE"
+    }
+  }
+}
+```
+
+## Motivations
+
+During the course of development you often need to store versioned packages that don't nicely fit into any packaging ecosystem. And even when they do fit into an ecosystem such as NPM, PyPi, Conan, etc sometimes you do not want to maintain the infrastructure behind those packaging systems. I wanted a simple way to store files on a private remote storage and pull down versions as needed. Thus Tycho Station was conceived.
+
+Tycho Station lets you store archives such as tarballs and zip files but also really anything on a remote storage system in a versioned fashion and then pull them down as needed.
+
+## Architecture
+
+Tycho Station is designed to work with multiple storage systems but right now the first and default system is Amazon S3 storage. Packages are organized like shown below.
+
+```
+bucket
+│
+└───package_name_1
+│   │   tycho.json
+│   │   tycho_1.0.pkg
+│   │   tycho_1.1.pkg
+│   │   tycho_2.0.pkg
+│
+└───package_name_2
+    │   tycho.json
+    │   tycho_1.0.pkg
+    │   tycho_1.1.pkg
+    │   tycho_2.0.pkg
+```
