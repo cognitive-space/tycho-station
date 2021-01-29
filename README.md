@@ -54,6 +54,8 @@ The default configuration file is `.tychoreg.json`. You can use the `--config` o
 }
 ```
 
+Note: s3 attributes can be anything that is accepted by ``boto3.client('s3', **kwargs)`
+
 **Example Configuration Using Environment Variables**
 
 For this example, a Read only key is set for pulling packages by everyone and users with escalated privileges can use a Write key.
