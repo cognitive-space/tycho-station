@@ -84,7 +84,7 @@ class Backend(BackendBase):
                 info = self.client.head_object(Bucket=self.bucket,
                                                Key=file_key)
 
-            self.message('Pulling: {} -> {}'.format(pkgname, localpath))
+            self.message('Pulling: {} {} -> {}'.format(pkgname, version, localpath))
             self.client.download_file(self.bucket, file_key, str(localpath))
             self.write_etag(info['ETag'], localpath)
 

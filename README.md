@@ -24,7 +24,7 @@ tychoreg pull pkgname
 # Outputs to tycho_packages/{filename} by default
 
 # Pull specific version
-tychoreg pull pkgname 1.0
+tychoreg pull pkgname --version 1.0
 # Outputs to tycho_packages/{filename} by default
 
 # Pull multiple packages at latest
