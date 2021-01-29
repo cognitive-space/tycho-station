@@ -23,6 +23,9 @@ poethepoet = "^0.9.0"
 [tool.poetry.extras]
 s3 = ["boto3"]
 
+[tool.poetry.scripts]
+tychoreg = "tychoreg.cli:app"
+
 [tool.poe.tasks]
 check_format = "yapf -rpd tychoreg/"
 format = "yapf -rpi -vv *.py tychoreg/"
