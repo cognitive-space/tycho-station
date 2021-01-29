@@ -54,7 +54,7 @@ The default configuration file is `.tychoreg.json`. You can use the `--config` o
 }
 ```
 
-Note: s3 attributes can be anything that is accepted by `boto3.client('s3', **kwargs)`
+Note: s3 attributes can be anything that is accepted by `boto3.client('s3', **kwargs)` except for `bucket` which is passed in later.
 
 **Example Configuration Using Environment Variables**
 
