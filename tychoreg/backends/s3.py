@@ -1,5 +1,6 @@
 import io
 import json
+import os
 
 import boto3
 import botocore
@@ -59,8 +60,6 @@ class Backend(BackendBase):
         return ret
 
     def pull(self, pkgname, version, outfile=None, force=False):
-        self.ensure_outdir()
-
         pkg = Package(pkgname)
         pkg.meta = self.json_data(str(pkg.metapath))
         if version == 'latest':
@@ -74,6 +73,8 @@ class Backend(BackendBase):
         localpath = self.outdir / pkg.meta['localname']
         if outfile:
             localpath = outfile
+
+        self.ensure_dir(localpath.parent)
 
         info = None
         if not force:

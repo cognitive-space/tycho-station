@@ -53,9 +53,9 @@ class BackendBase:
     def json_data(self, path):
         return json.loads(self.read(path))
 
-    def ensure_outdir(self):
-        if not self.outdir.exists():
-            os.makedirs(self.outdir)
+    def ensure_dir(self, d):
+        if not d.exists():
+            os.makedirs(d)
 
     def write_etag(self, tag, path):
         path = str(path) + '.etag'
