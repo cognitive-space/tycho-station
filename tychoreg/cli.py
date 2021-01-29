@@ -9,7 +9,7 @@ import typer
 app = typer.Typer()
 
 GREEN = typer.colors.GREEN
-DEFAULT_BACKEND = typer.Option("s3", help="Filesystem backend")
+DEFAULTS = {"backend": "s3", "outdir": "tycho_packages"}
 DEFAULT_CONFIG = typer.Option(".tychoreg.json",
                               help="Config file path",
                               exists=False,
@@ -26,24 +26,38 @@ def get_env(key, data):
         data[key] = value
 
 
-def get_backend(modname, config):
-    mod = importlib.import_module('tychoreg.backends.{}'.format(modname))
-    kwargs = {}
+def get_backend(config):
+    data = {}
+    backend_kwargs = {}
+    cli_kwargs = DEFAULTS
+
     if config.exists():
         with config.open() as fh:
             data = json.load(fh)
-            if modname in data:
-                kwargs = data[modname]
 
-    for key in kwargs:
-        get_env(key, kwargs)
+            if "tycho" in data:
+                cli_kwargs = data["tycho"]
+                for k, v in DEFAULTS.items():
+                    if k not in cli_kwargs:
+                        cli_kwargs[k] = v
 
-    return mod.Backend(**kwargs)
+    for key in cli_kwargs:
+        get_env(key, cli_kwargs)
+
+    if cli_kwargs["backend"] in data:
+        backend_kwargs = data[cli_kwargs["backend"]]
+
+    for key in backend_kwargs:
+        get_env(key, backend_kwargs)
+
+    mod = importlib.import_module('tychoreg.backends.{}'.format(
+        cli_kwargs["backend"]))
+    return mod.Backend(cli_kwargs, backend_kwargs)
 
 
 @app.command()
-def list(backend: str = DEFAULT_BACKEND, config: Path = DEFAULT_CONFIG):
-    backend = get_backend(backend, config)
+def list(config: Path = DEFAULT_CONFIG):
+    backend = get_backend(config)
 
     for pkg in backend.list_packages():
         typer.echo(
@@ -52,28 +66,22 @@ def list(backend: str = DEFAULT_BACKEND, config: Path = DEFAULT_CONFIG):
 
 
 @app.command()
-def list_versions(pkg: str,
-                  backend: str = DEFAULT_BACKEND,
-                  config: Path = DEFAULT_CONFIG):
-    backend = get_backend(backend, config)
-    typer.echo(typer.style("{} Versions".format(pkg), fg=GREEN))
-    for version in backend.list_versions(pkg):
+def list_versions(pkgname: str, config: Path = DEFAULT_CONFIG):
+    backend = get_backend(config)
+    typer.echo(typer.style("{} Versions".format(pkgname), fg=GREEN))
+    for version in backend.list_versions(pkgname):
         typer.echo("  - {}".format(version))
 
 
 @app.command()
-def push(file_key: str,
-         backend: str = DEFAULT_BACKEND,
-         config: Path = DEFAULT_CONFIG):
-    Backend = get_backend(backend, config)
+def push(pkgname: str, config: Path = DEFAULT_CONFIG):
+    backend = get_backend(config)
 
 
 @app.command()
-def pull(file_key: str = None,
-         force: bool = False,
-         backend: str = DEFAULT_BACKEND,
-         config: Path = DEFAULT_CONFIG):
-    Backend = get_backend(backend, config)
+def pull(pkgname: str, force: bool = False, config: Path = DEFAULT_CONFIG):
+    backend = get_backend(config)
+    backend.pull(pkgname, force)
 
 
 if __name__ == "__main__":

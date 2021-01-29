@@ -5,10 +5,12 @@ from tychoreg.backends.core import BackendBase, Package
 
 
 class Backend(BackendBase):
-    def __init__(self, **config):
-        self.bucket = config['bucket']
-        del config['bucket']
-        self.client = boto3.client('s3', **config)
+    def __init__(self, cli_kwargs, backend_kwargs):
+        super().__init__(cli_kwargs, backend_kwargs)
+
+        self.bucket = backend_kwargs['bucket']
+        del backend_kwargs['bucket']
+        self.client = boto3.client('s3', **backend_kwargs)
 
     def exists(self, key):
         try:
@@ -33,8 +35,7 @@ class Backend(BackendBase):
             pkg = Package(name)
             metapath = str(pkg.metapath)
             if self.exists(metapath):
-                data = self.json_data(metapath)
-                pkg = Package(name, data)
+                pkg.meta = self.json_data(metapath)
 
             ret.append(pkg)
 
@@ -53,3 +54,31 @@ class Backend(BackendBase):
 
         ret.sort()
         return ret
+
+    def pull(self, pkgname, force=False):
+        self.ensure_outdir()
+
+        pkg = Package(pkgname)
+        pkg.meta = self.json_data(str(pkg.metapath))
+        version = pkg.meta['latest']
+
+        file_key = "{}/tycho_{}.pkg".format(pkgname, version)
+        localpath = self.outdir / pkg.meta['localname']
+
+        info = None
+        if not force:
+            info = self.client.head_object(Bucket=self.bucket, Key=file_key)
+            force = self.needs_update(info['ETag'], info['ContentLength'],
+                                      localpath)
+
+        if force:
+            if not info:
+                info = self.client.head_object(Bucket=self.bucket,
+                                               Key=file_key)
+
+            self.message('Pulling: {} -> {}'.format(pkgname, localpath))
+            self.client.download_file(self.bucket, file_key, str(localpath))
+            self.write_etag(info['ETag'], localpath)
+
+        else:
+            self.message('Skipping: {}'.format(pkgname))

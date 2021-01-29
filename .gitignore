@@ -129,4 +129,4 @@ dmypy.json
 .pyre/
 
 .tychoreg.json
-
+tycho_packages
