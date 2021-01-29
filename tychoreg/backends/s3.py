@@ -67,6 +67,10 @@ class Backend(BackendBase):
         if version == 'latest':
             version = pkg.meta['latest']
 
+        if not version:
+            self.message('Nothing to Pull: {}'.format(pkgname))
+            sys.exit(1)
+
         file_key = self.remote_pkg_path(pkgname, version)
         localpath = self.outdir / pkg.meta['localname']
 
