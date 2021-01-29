@@ -22,5 +22,12 @@ tychoreg push pkgname 1.0 path_to/local/file --promote-latest
 # Pull latest package
 tychoreg pull pkgname
 # Outputs to tycho_packages/{filename} by default
+
+# Pull specific version
+tychoreg pull pkgname 1.0
+# Outputs to tycho_packages/{filename} by default
+
+# Pull multiple packages at latest
+tychoreg pull-list pkgname1 pkgname2 pkgname3
 ```
 
