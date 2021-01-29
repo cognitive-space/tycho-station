@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 
 import typer
+from dotenv import load_dotenv
 
 app = typer.Typer()
 
@@ -41,6 +42,9 @@ def get_backend(config):
                     if k not in cli_kwargs:
                         cli_kwargs[k] = v
 
+    if 'dotenv' in cli_kwargs:
+        load_dotenv(dotenv_path=cli_kwargs['dotenv'])
+
     for key in cli_kwargs:
         get_env(key, cli_kwargs)
 
@@ -74,14 +78,28 @@ def list_versions(pkgname: str, config: Path = DEFAULT_CONFIG):
 
 
 @app.command()
-def push(pkgname: str, config: Path = DEFAULT_CONFIG):
+def push(pkgname: str,
+         version: str,
+         file: Path,
+         promote_latest: bool = False,
+         config: Path = DEFAULT_CONFIG):
     backend = get_backend(config)
+    backend.push(pkgname, version, file, promote_latest)
 
 
 @app.command()
-def pull(pkgname: str, force: bool = False, config: Path = DEFAULT_CONFIG):
+def promote(pkgname: str, version: str, config: Path = DEFAULT_CONFIG):
     backend = get_backend(config)
-    backend.pull(pkgname, force)
+    backend.promote(pkgname, version)
+
+
+@app.command()
+def pull(pkgname: str,
+         version: str = 'latest',
+         force: bool = False,
+         config: Path = DEFAULT_CONFIG):
+    backend = get_backend(config)
+    backend.pull(pkgname, version, force)
 
 
 if __name__ == "__main__":

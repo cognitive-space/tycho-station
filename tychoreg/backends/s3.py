@@ -1,3 +1,7 @@
+import io
+import json
+import sys
+
 import boto3
 import botocore
 
@@ -55,14 +59,15 @@ class Backend(BackendBase):
         ret.sort()
         return ret
 
-    def pull(self, pkgname, force=False):
+    def pull(self, pkgname, version, force=False):
         self.ensure_outdir()
 
         pkg = Package(pkgname)
         pkg.meta = self.json_data(str(pkg.metapath))
-        version = pkg.meta['latest']
+        if version == 'latest':
+            version = pkg.meta['latest']
 
-        file_key = "{}/tycho_{}.pkg".format(pkgname, version)
+        file_key = self.remote_pkg_path(pkgname, version)
         localpath = self.outdir / pkg.meta['localname']
 
         info = None
@@ -82,3 +87,31 @@ class Backend(BackendBase):
 
         else:
             self.message('Skipping: {}'.format(pkgname))
+
+    def push(self, pkgname, version, file, promote_latest=False):
+        file_key = self.remote_pkg_path(pkgname, version)
+
+        if self.exists(file_key):
+            self.error('Already Exists: {}, Version {}'.format(
+                pkgname, version))
+            sys.exit(1)
+
+        else:
+            self.client.upload_file(str(file), self.bucket, file_key)
+            if promote_latest:
+                self.promote(pkgname, version)
+
+    def promote(self, pkgname, version):
+        file_key = self.remote_pkg_path(pkgname, version)
+
+        if self.exists(file_key):
+            pkg = Package(pkgname)
+            data = self.json_data(str(pkg.metapath))
+            data['latest'] = version
+            fh = io.BytesIO(json.dumps(data, indent=2).encode())
+            self.client.upload_fileobj(fh, self.bucket, str(pkg.metapath))
+
+        else:
+            self.error('Does Not Exist: {}, Version {}'.format(
+                pkgname, version))
+            sys.exit(1)

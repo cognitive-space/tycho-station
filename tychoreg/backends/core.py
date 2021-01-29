@@ -26,6 +26,9 @@ class BackendBase:
         self.outdir = Path(cli_kwargs['outdir'])
         self.config = backend_kwargs
 
+    def remote_pkg_path(self, pkgname, version):
+        return "{}/tycho_{}.pkg".format(pkgname, version)
+
     def list_packages(self):
         raise NotImplementedError
 
@@ -33,6 +36,15 @@ class BackendBase:
         raise NotImplementedError
 
     def read(self, path):
+        raise NotImplementedError
+
+    def push(self, pkgname, version, file, promote_latest=False):
+        raise NotImplementedError
+
+    def promote(self, pkgname, version):
+        raise NotImplementedError
+
+    def pull(self, pkgname, version, force=False):
         raise NotImplementedError
 
     def json_data(self, path):
@@ -63,6 +75,9 @@ class BackendBase:
 
     def message(self, msg):
         typer.echo(msg)
+
+    def error(self, msg):
+        typer.secho(msg, fg=typer.colors.RED)
 
     def needs_update(self, remote_hash, remote_size, path):
         local_hash, local_size = self.read_etag(path)

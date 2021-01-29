@@ -11,9 +11,9 @@ packages = [
 [tool.poetry.dependencies]
 python = ">=3.6,<4.0"
 typer = "^0.3.2"
-urllib3 = {git = "https://github.com/pizzapanther/urllib3.git", rev = "1.26.x"}
-boto3 = {version = "^1.16.62", optional = true}
 dataclasses = {version = "^0.8", python = "3.6"}
+boto3 = {version = "^1.16.62", optional = true}
+python-dotenv = "^0.15.0"
 
 [tool.poetry.dev-dependencies]
 yapf = "^0.30.0"
