@@ -72,6 +72,16 @@ For this example, a Read only key is set for pulling packages by everyone and us
 }
 ```
 
+**Loading a DotEnv file**
+```json
+    ...
+    "tycho": {
+        "dotenv": "/home/paul/cspace/tycho-station/.env"
+    },
+    ...
+```
+
+
 ## Motivations
 
 During the course of development you often need to store versioned packages that don't nicely fit into any packaging ecosystem. And even when they do fit into an ecosystem such as NPM, PyPi, Conan, etc sometimes you do not want to maintain the infrastructure behind those packaging systems. I wanted a simple way to store files on a private remote storage and pull down versions as needed. Thus Tycho Station was conceived.
@@ -97,3 +107,20 @@ bucket
     │   tycho_1.1.pkg
     │   tycho_2.0.pkg
 ```
+
+**tycho.json**
+
+This file is what tracks the package meta data.
+
+```json
+{
+  "localname": "narf.tar.gz",
+  "latest": "1.0"
+}
+```
+
+**tycho.json Attributes**
+| Name           | Description  | Command(s)  |
+| :------------- | :----------- | :---------- |
+| localname      | Filename used when downloading the package. | Set by `init` command |
+| latest         | Version that is downloaded when `latest` is requested. | Updated when `promote` command is used or `--promote-latest` flag is used with the `push` command. |
