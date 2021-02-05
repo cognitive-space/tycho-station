@@ -1,11 +1,11 @@
 [tool.poetry]
 name = "tycho-station"
-version = "0.2.3"
+version = "0.2.4"
 description = "A simple registry for storing versioned packages and archives"
-authors = ["Paul Bailey <paul@neutron.studio>"]
+authors = ["Paul Bailey <paul@cognitivespace.com>"]
 license = "MIT"
 readme = "README.md"
-repository = "https://github.com/pizzapanther/tycho-station"
+repository = "https://github.com/cognitive-space/tycho-station"
 packages = [
     { include = "tychoreg" }
 ]
