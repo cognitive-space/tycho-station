@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tycho-station"
-version = "0.2.4"
+version = "0.3.0"
 description = "A simple registry for storing versioned packages and archives"
 authors = ["Paul Bailey <paul@cognitivespace.com>"]
 license = "MIT"
@@ -12,7 +12,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = ">=3.6,<4.0"
-typer = "^0.3.2"
+typer = "^0.4.0"
 dataclasses = {version = "^0.8", python = "3.6"}
 boto3 = {version = "^1.16.62", optional = true}
 python-dotenv = "^0.15.0"
