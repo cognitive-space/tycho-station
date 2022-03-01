@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tycho-station"
-version = "0.3.0"
+version = "0.4.0"
 description = "A simple registry for storing versioned packages and archives"
 authors = ["Paul Bailey <paul@cognitivespace.com>"]
 license = "MIT"
